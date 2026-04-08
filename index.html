@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Inside Out — Лаборатория эмоций | Поддержка</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Quicksand', sans-serif;
+      background: radial-gradient(ellipse at 20% 30%, #0a0f2a, #030617);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #f0eef7;
+    }
+
+    /* ЭКРАН ВХОДА (пароль) - тёмная магия */
+    .lock-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 40% 30%, #1a1f3a, #020212);
+      backdrop-filter: blur(2px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    .lock-card {
+      background: rgba(18, 25, 55, 0.75);
+      backdrop-filter: blur(16px);
+      border-radius: 64px;
+      padding: 48px 36px;
+      text-align: center;
+      max-width: 460px;
+      width: 88%;
+      border: 1px solid rgba(255, 180, 255, 0.3);
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), 0 0 20px rgba(156, 80, 255, 0.2);
+    }
+
+    .lock-emoji {
+      font-size: 80px;
+      filter: drop-shadow(0 0 12px #ff80d5);
+      animation: floatGlow 3s infinite ease;
+    }
+
+    @keyframes floatGlow {
+      0% { transform: translateY(0px); text-shadow: 0 0 2px magenta; }
+      50% { transform: translateY(-12px); text-shadow: 0 0 20px #ff66cc; }
+      100% { transform: translateY(0px); text-shadow: 0 0 2px #a55eff; }
+    }
+
+    .lock-card h2 {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, #ffc6ff, #b77eff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 20px 0 8px;
+    }
+
+    .password-box {
+      display: flex;
+      gap: 12px;
+      background: rgba(10, 15, 40, 0.7);
+      border-radius: 100px;
+      padding: 6px 6px 6px 24px;
+      margin: 28px 0 15px;
+      border: 1px solid rgba(210, 130, 255, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    .password-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 15px 0;
+      color: #ffeef8;
+      font-size: 1rem;
+      outline: none;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+
+    .password-box button {
+      background: linear-gradient(100deg, #b76eff, #f06eff);
+      border: none;
+      padding: 10px 28px;
+      border-radius: 50px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 0 12px #c86eff;
+    }
+
+    .error-msg {
+      color: #ffa7c4;
+      text-shadow: 0 0 3px red;
+      font-size: 0.85rem;
+      margin-top: 12px;
+    }
+
+    /* ========= ОСНОВНОЙ КОНТЕЙНЕР (после входа) ========= */
+    .main-site {
+      display: none;
+      padding-bottom: 60px;
+    }
+
+    /* Хедер с неоновыми шарами */
+    .neon-header {
+      padding: 40px 20px 25px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse at 50% 0%, #201c3a, transparent);
+    }
+
+    .glow-title {
+      font-size: 3.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFB3FF, #A877FF, #6E4AFF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.5px;
+      text-shadow: 0 0 20px rgba(128, 0, 255, 0.4);
+    }
+
+    .sub-glow {
+      color: #bdb8ff;
+      margin-top: 10px;
+      font-size: 1.2rem;
+      letter-spacing: 1px;
+    }
+
+    /* горизонтальный ряд светящихся сфер */
+    .emotions-carousel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      padding: 40px 30px 60px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .emotion-sphere {
+      width: 180px;
+      background: rgba(25, 30, 65, 0.5);
+      backdrop-filter: blur(16px);
+      border-radius: 100px;
+      text-align: center;
+      padding: 28px 15px 24px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 120, 255, 0.4);
+      box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .emotion-sphere:hover {
+      transform: translateY(-18px) scale(1.02);
+      border-color: #ff9eff;
+      box-shadow: 0 0 28px rgba(190, 80, 255, 0.6);
+      background: rgba(55, 45, 95, 0.6);
+    }
+
+    .sphere-img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      margin: 0 auto 12px;
+      filter: drop-shadow(0 0 12px rgba(200, 100, 255, 0.7));
+    }
+
+    .emotion-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(145deg, #FFE6FF, #CBA6FF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .emotion-tag {
+      font-size: 0.7rem;
+      color: #b09eff;
+      margin-top: 5px;
+    }
+
+    /* МОДАЛЬНОЕ ОКНО (глубокая поддержка) */
+    .modal-emotion {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(3, 5, 20, 0.8);
+      backdrop-filter: blur(20px);
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+    }
+
+    .modal-glass {
+      max-width: 640px;
+      width: 90%;
+      background: rgba(18, 20, 45, 0.75);
+      backdrop-filter: blur(24px);
+      border-radius: 70px;
+      padding: 28px 28px 38px;
+      border: 1px solid rgba(255, 130, 255, 0.5);
+      box-shadow: 0 30px 45px rgba(0, 0, 0, 0.6), 0 0 40px rgba(156, 0, 255, 0.3);
+      transition: all 0.2s;
+    }
+
+    .close-modal-btn {
+      position: absolute;
+      right: 28px;
+      top: 20px;
+      font-size: 32px;
+      cursor: pointer;
+      color: #ffc1ff;
+    }
+
+    .modal-emoji-img {
+      width: 85px;
+      margin: 0 auto 10px;
+    }
+
+    .modal-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+    }
+
+    .support-quote {
+      background: rgba(80, 70, 140, 0.5);
+      border-radius: 50px;
+      padding: 15px;
+      margin: 18px 0;
+      font-style: italic;
+      border-left: 5px solid #f377ff;
+    }
+
+    /* генератор поддержки */
+    .generator-neon {
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 48px;
+      padding: 18px;
+      margin: 16px 0;
+    }
+
+    .support-text {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+      min-height: 70px;
+      color: #f0dbff;
+    }
+
+    .refresh-support {
+      background: #4f3d9e;
+      border: none;
+      padding: 8px 24px;
+      border-radius: 60px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 0 8px #ae7eff;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .action-link {
+      background: rgba(30, 25, 70, 0.7);
+      backdrop-filter: blur(4px);
+      padding: 12px;
+      border-radius: 60px;
+      text-decoration: none;
+      color: #ffe5ff;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: 0.2s;
+      border: 1px solid #bd89ff;
+    }
+
+    .contact-row {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.75rem;
+      color: #9d8eff;
+    }
+
+    @media (max-width: 750px) {
+      .emotion-sphere { width: 140px; padding: 18px 8px; }
+      .sphere-img { width: 65px; height: 65px; }
+      .emotion-name { font-size: 1.2rem; }
+      .glow-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- БЛОКИРОВКА -->
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-card">
+    <div class="lock-emoji">🧠🌀✨</div>
+    <h2>эмоциональный контур</h2>
+    <p>введи пароль, чтобы войти в сознание</p>
+    <div class="password-box">
+      <input type="password" id="passInput" placeholder="секретный ключ">
+      <button id="unlockBtn">Открыть</button>
+    </div>
+    <div id="errorMsg" class="error-msg"></div>
+    <div style="font-size:12px; margin-top:18px;">💜 подсказка: дата твоего рождение 💜</div>
+  </div>
+</div>
+
+<!-- ГЛАВНЫЙ САЙТ -->
+<div id="mainSite" class="main-site">
+  <div class="neon-header">
+    <div class="glow-title">🧩 YOUR EMOTIONS🧩</div>
+    <div class="sub-glow">светящиеся сферы эмоций — нажми на любую</div>
+  </div>
+  <div class="emotions-carousel" id="emotionGrid"></div>
+  <footer>🌙 каждая эмоция — это цветная планета внутри тебя. поддержка всегда рядом 🌙</footer>
+</div>
+
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div id="emotionModal" class="modal-emotion">
+  <div class="modal-glass">
+    <span class="close-modal-btn" id="closeModalX">&times;</span>
+    <div id="modalInnerContent"></div>
+    <button id="backToSpheres" style="margin-top:20px; background:#5846a4; border:none; padding:12px 26px; border-radius:40px; color:white; font-weight:bold; cursor:pointer; width:100%;">🔮 ВЕРНУТЬСЯ К ЭМОЦИЯМ</button>
+  </div>
+</div>
+
+<script>
+  // ====================== ПАРОЛЬ ======================
+  const CORRECT_PASS = "10102007";
+  const lockDiv = document.getElementById('lockScreen');
+  const mainDiv = document.getElementById('mainSite');
+  const unlockButton = document.getElementById('unlockBtn');
+  const passInput = document.getElementById('passInput');
+  const errorSpan = document.getElementById('errorMsg');
+
+  function tryUnlock() {
+    if (passInput.value.trim() === CORRECT_PASS) {
+      lockDiv.style.display = 'none';
+      mainDiv.style.display = 'block';
+      createFloatingBackgroundEffect();
+    } else {
+      errorSpan.innerText = '❌ неверный код, попробуй "10102007"';
+      passInput.value = '';
+    }
+  }
+  unlockButton.addEventListener('click', tryUnlock);
+  passInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') tryUnlock(); });
+
+  // ============ ДАННЫЕ ВСЕХ ЭМОЦИЙ (оригинальные + новые: тревожность, стыд, скука, зависть) ============
+  const emotionsData = [
+    { id: 'joy', name: 'Радость', emoji: '✨', color: '#F7D44A', glow: '#FFE484', img: 'joy.png', videoUrl: 'https://youtu.be/u4IZoQgWmII', contactMsg: 'Ты можешь поделиться радостью, я отвечу теплом' },
+    { id: 'sadness', name: 'Грусть', emoji: '😢', color: '#5FA7C2', glow: '#6DC5FF', img: 'sadness.png', videoUrl: 'https://youtu.be/RYDAHkZfSeQ', contactMsg: 'Поговори со мной, когда тяжело — я рядом' },
+    { id: 'anger', name: 'Гнев', emoji: '😤', color: '#E35F3E', glow: '#FF7A4A', img: 'anger.png', videoUrl: 'https://youtu.be/wkse4PPxkk4', contactMsg: 'Выпусти пар, я выслушаю без осуждения' },
+    { id: 'fear', name: 'Страх', emoji: '😨', color: '#A47BE0', glow: '#C48CFF', img: 'fear.png', videoUrl: 'https://youtu.be/lzpiFgzLGkM?list=RDlzpiFgzLGkM', contactMsg: 'Твои страхи не стыдны, напиши мне' },
+    { id: 'disgust', name: 'Брезгливость', emoji: '🤢', color: '#6FA36A', glow: '#8CC47A', img: 'disgust.png', videoUrl: 'https://youtu.be/n9z1gesN6zs', contactMsg: 'Можно высказать отвращение, это честно' },
+    // новые эмоции из запроса
+    { id: 'anxiety', name: 'Тревожность', emoji: '🌪️', color: '#FF8C94', glow: '#FFA5B0', img: 'anxiety.png', videoUrl: 'https://youtu.be/4Ts9FddJiQA?list=RD4Ts9FddJiQA', contactMsg: 'Беспокоишься о будущем? Давай разберём вместе' },
+    { id: 'embarrassment', name: 'Стыд', emoji: '🫣', color: '#F4A261', glow: '#FFBC7A', img: 'embarrassment.png', videoUrl: 'https://youtu.be/E0Om1LC-XeU', contactMsg: 'Неловкость — это нормально. Я здесь, не стесняйся' },
+    { id: 'ennui', name: 'Скука / Апатия', emoji: '💤', color: '#8D99AE', glow: '#B0BBD6', img: 'ennui.png', videoUrl: 'https://youtu.be/eVR9Er0fN5M?list=RDeVR9Er0fN5M', contactMsg: 'Ничего не хочется? Просто побудь, я никуда не уйду' },
+    { id: 'envy', name: 'Зависть', emoji: '💚', color: '#9DC183', glow: '#B8E08C', img: 'envy.png', videoUrl: 'https://youtu.be/wnHW6o8WMas', contactMsg: 'Сравнение мучает? Поговорим об этом' }
+  ];
+
+  // фразы поддержки для каждой эмоции (генератор)
+const supportLibrary = {
+    joy: [
+        "✨ Твоя радость — это маяк. Позволь ей быть маленькой, но твоей.",
+        "☀️ Сегодня ты можешь улыбнуться себе просто так.",
+        "🎈 Свет внутри тебя никуда не делся, даже если временно темно.",
+        "🌸 Радость не обязана быть громкой. Тихая улыбка — тоже победа.",
+        "💛 Ты заслуживаешь хороших моментов прямо сейчас, без условий.",
+        "🫧 Вспомни что-то, что когда-то делало тебя счастливым. Оно всё ещё с тобой.",
+        "🌟 Даже маленькая искра радости способна осветить целый день.",
+        "🍃 Радость живёт в простых вещах: тёплый чай, мягкий плед, глубокий вдох.",
+        "🎵 Твоя внутренняя мелодия никуда не исчезла — просто играет тише. Прислушайся.",
+        "💫 Ты имеешь полное право радоваться без чувства вины. Это твоя энергия."
+    ],
+    sadness: [
+        "💧 Грусть — глубокое море. Ты не тонешь, ты плаваешь.",
+        "🌧️ Слёзы — это дождь, который удобряет душу.",
+        "🫂 Разреши себе побыть в тишине. Ты не один.",
+        "🌙 Грусть говорит, что тебе было по-настоящему важно. Это не слабость.",
+        "📖 Твоя печаль — это глава, а не вся книга. Перелистнёшь, когда будешь готов.",
+        "☁️ Иногда лучшее, что можно сделать — просто лежать и дышать. Это уже достаточно.",
+        "🍂 Как листья опадают осенью, так и грусть приходит, чтобы освободить место для нового.",
+        "🕯️ Твои слёзы не бессмысленны. Они смывают боль, которую слова не могут вынести.",
+        "💙 Ты не испорчен своей грустью. Ты — человек, который умеет чувствовать глубоко.",
+        "🌊 Грусть приходит волнами. Просто наблюдай за ними, не пытаясь остановить."
+    ],
+    anger: [
+        "🔥 Гнев не разрушает тебя, если направить его в честные слова.",
+        "💢 Твоя злость имеет причину. Выдохни и назови её.",
+        "🤜 Можно сжать кулаки, а потом раскрыть — ты в безопасности.",
+        "⚡ Гнев — это энергия, которая просит движения. Потряси руками, потопай ногами.",
+        "🧱 Твоя злость часто защищает твои границы. Поблагодари её, а затем отпусти.",
+        "🌋 Вулкан внутри тебя не должен взорваться. Выпускай пар маленькими порциями.",
+        "🛡️ Ты имеешь право злиться на несправедливость. Но не позволяй гневу сжигать тебя изнутри.",
+        "💪 Сильная эмоция — признак живого человека. Ты не робот, и это прекрасно.",
+        "❄️ Прежде чем действовать от гнева, сделай три медленных выдоха. Лёд остывает постепенно.",
+        "🎯 Злость часто указывает на то, что тебе что-то очень важно. Найди это «что-то»."
+    ],
+    fear: [
+        "🌀 Страх — громкий сторож. Скажи ему: «Спасибо, я сам решу».",
+        "🌿 Один маленький шаг: назови 3 вещи вокруг. Ты здесь.",
+        "🤍 Даже дрожа, ты идёшь дальше. Это храбрость.",
+        "🧠 Твой мозг пытается тебя защитить, но иногда он слишком усердствует.",
+        "👣 Страх живёт в будущем. Вернись в настоящее: что ты видишь прямо сейчас?",
+        "🌬️ Положи руку на сердце. Оно бьётся — значит, ты жив и уже справляешься.",
+        "📅 Помни: почти всё, чего мы боялись в прошлом, так и не случилось.",
+        "🤝 Ты не обязан быть бесстрашным. Достаточно просто сделать один маленький шаг.",
+        "🔦 Включи внутренний фонарик: даже слабый свет рассеивает тень страха.",
+        "🌱 Страх может расти только во тьме неизвестности. Назови его по имени — и он уменьшится."
+    ],
+    disgust: [
+        "🍃 Брезгливость защищает твои границы. Спасибо ей.",
+        "🧼 Одно действие: убери раздражающий предмет, и станет легче.",
+        "🤢 Ты имеешь полное право сказать «фу» ситуации.",
+        "🚪 Твоё отвращение — это компас, который показывает, что тебе не подходит. Уважай его.",
+        "🧹 Можно не любить всё вокруг. Просто убери одну вещь, которая раздражает больше всего.",
+        "💨 Представь, что ты выдыхаешь серый туман брезгливости. С каждым выдохом его становится меньше.",
+        "🛋️ Ты не обязан терпеть то, что тебе противно. Это твоя жизнь, твои чувства.",
+        "✨ Брезгливость часто идёт рука об руку с усталостью. Может быть, тебе просто нужен отдых?",
+        "🧴 Как мы моем руки перед едой, так и психике иногда нужно «омыться» от неприятного.",
+        "🌊 Отвращение — это волна. Позволь ей накатить и уйти, не застревая в ней."
+    ],
+    anxiety: [
+        "😰 Тревога рисует страшное будущее, но сейчас ты дышишь. Ты в порядке.",
+        "🌪️ Будущее не определено. Вернись в этот вдох.",
+        "🌀 Тревожность — гиперопекун. Скажи: «Я справлюсь, даже если страшно».",
+        "💚 Ты не должен решать всё прямо сейчас. Просто выдохни.",
+        "⏳ Тревога — это часы, которые спешат. Верни их к текущей минуте.",
+        "🫂 Ты не обязан быть продуктивным, когда тревожно. Достаточно просто быть.",
+        "📉 У тревоги есть привычка преувеличивать. Уменьши масштаб: насколько это реально прямо здесь?",
+        "🧘‍♂️ Положи руку на живот. Чувствуешь, как он поднимается и опускается? Ты в настоящем.",
+        "🌊 Мысль — не факт. Тревожная мысль — это всего лишь облако, проплывающее по небу.",
+        "⭐ Ты уже пережил 100% своих самых трудных дней до этого. Этот — не станет исключением."
+    ],
+    embarrassment: [
+        "😳 Стыд говорит, что ты ошибся. Но ошибки — не приговор.",
+        "🫣 Неловкость пройдёт, а ты останешься ценным человеком.",
+        "💫 Твоя уязвимость делает тебя настоящим. Мне не стыдно за тебя.",
+        "🌙 Стыд любит темноту и тишину. Выведи его на свет — расскажи тому, кому доверяешь.",
+        "🧸 Все люди иногда чувствуют себя неловко. Даже те, кто выглядит идеально.",
+        "🛡️ Стыд часто говорит: «Я плохой». Но правда в том, что ты поступил неидеально, а не то, что ты плох.",
+        "💬 Назови свой стыд по имени: «Я стыжусь того-то». Часто после этого он теряет силу.",
+        "🌱 Твоя неловкость — это росток новой мудрости. Так ты учишься.",
+        "🤝 Каждый человек на земле хотя бы раз делал что-то, за что ему было стыдно. Ты не один.",
+        "✨ Ты имеешь право на несовершенство. Совершенные люди живут только в фильтрах Instagram."
+    ],
+    ennui: [
+        "😒 Апатия — это туман. Он рассеется, когда будешь готов.",
+        "💤 Можно просто лежать и ничего не делать. Это тоже забота о себе.",
+        "🕯️ Даже маленькая искра: выпить воды или просто помыть лицо.",
+        "🍂 Скука — это не провал. Это пауза, которую твоя психика взяла заслуженно.",
+        "🛌 Разреши себе ничего не хотеть. Это состояние не навсегда.",
+        "🌬️ Сделай один микро-шаг: открой окно или встань с кровати на минуту. Без давления.",
+        "📺 Апатия часто кричит: «Ничто не имеет смысла». Но маленькое действие создаёт маленький смысл.",
+        "🍵 Ты не обязан быть энергичным. Просто выпей стакан воды — это уже поступок.",
+        "🕰️ Скука — это тишина, в которой можно услышать себя. Побудь с ней немного.",
+        "🧩 Даже если ничего не хочется, твоё тело заслуживает заботы: потянись, зевни, помассируй шею."
+    ],
+    envy: [
+        "😏 Зависть показывает, чего ты хочешь на самом деле. Это компас.",
+        "💚 Сравнение ворует радость. Твой путь уникален.",
+        "🌟 Твои достижения не становятся меньше от чужих успехов. Ты хорош таким, какой есть.",
+        "🔍 Зависть — это карта желаний. Рассмотри её: что именно тебя задело? Чего тебе не хватает?",
+        "📖 Ты видишь чужой «лучший кадр», но не видишь их «дубли» и «слёзы». Не сравнивай свой фильм с чужим трейлером.",
+        "🌱 Вместо «почему у них, а не у меня» спроси: «что я могу сделать для себя уже сегодня?».",
+        "💡 Зависть — это энергия. Перенаправь её на маленький шаг к своей мечте.",
+        "👁️ Фокус на чужом отнимает свет у твоего собственного пути. Поверни взгляд на себя.",
+        "🤲 Практикуй благодарность за то, что уже есть. Это лучшее лекарство от зависти.",
+        "🏆 Ты не соревнуешься со всем миром. Твоя единственная гонка — с самим собой вчерашним."
+    ]
+};
+
+  function getRandomSupport(emotionId) {
+    const phrases = supportLibrary[emotionId] || supportLibrary.joy;
+    return phrases[Math.floor(Math.random() * phrases.length)];
+  }
+
+  // отрисовка главной сетки (горизонтальные светящиеся сферы)
+  function renderMainGrid() {
+    const grid = document.getElementById('emotionGrid');
+    grid.innerHTML = '';
+    emotionsData.forEach(em => {
+      const sphere = document.createElement('div');
+      sphere.className = 'emotion-sphere';
+      sphere.style.borderBottom = `3px solid ${em.color}`;
+      sphere.style.boxShadow = `0 0 20px ${em.glow || em.color}40`;
+      sphere.setAttribute('data-id', em.id);
+      sphere.innerHTML = `
+        <img class="sphere-img" src="${em.img}" alt="${em.name}" loading="lazy" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3095/3095444.png'">
+        <div class="emotion-name" style="text-shadow: 0 0 6px ${em.color};">${em.name}</div>
+        <div class="emotion-tag">${em.emoji}</div>
+      `;
+      sphere.addEventListener('click', () => openEmotionModal(em.id));
+      grid.appendChild(sphere);
+    });
+  }
+
+  // Модальное окно с генератором, видео, ссылками на звонок/сообщение
+  function openEmotionModal(emotionId) {
+    const emotion = emotionsData.find(e => e.id === emotionId);
+    if (!emotion) return;
+    const modal = document.getElementById('emotionModal');
+    const container = document.getElementById('modalInnerContent');
+    let currentSupport = getRandomSupport(emotionId);
+
+    function buildContent(supportText) {
+      const videoLink = emotion.videoUrl;
+      const contactBase = emotion.contactMsg;
+      const whatsappLink1 = `https://wa.me/77078135446?url=Мне%20нужна%20поддержка&text=${encodeURIComponent(contactBase )}`;
+      const whatsappLink = `https://wa.me/77078135446?text=${encodeURIComponent(contactBase )}`;
+
+      return `
+        <div style="text-align:center;">
+          <img src="${emotion.img}" style="width:80px; filter:drop-shadow(0 0 12px ${emotion.color});" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1998/1998591.png'">
+          <div class="modal-title" style="background:linear-gradient(145deg, #FFDAFF, ${emotion.color}); -webkit-background-clip:text; background-clip:text; color:transparent;">${emotion.name} ${emotion.emoji}</div>
+          <div class="support-quote">«${emotion.id === 'anxiety' ? 'Тревога — это забота, зашедшая слишком далеко' : emotion.id === 'embarrassment' ? 'Стыд — маска, которая спадает' : emotion.id === 'ennui' ? 'Апатии нужно время' : emotion.id === 'envy' ? 'Зависть — учитель желаний' : 'Ты имеешь право чувствовать'}»</div>
+          <div class="generator-neon">
+            <div class="support-text" id="dynamicSupportText">✨ ${supportText}</div>
+            <button class="refresh-support" id="refreshSupportBtn">🌀 Новая поддержка</button>
+          </div>
+          <div class="action-buttons">
+            <a href="${videoLink}" target="_blank" class="action-link">🎥 Видео, которое подойдёт этому состоянию →</a>
+            <div class="contact-row">
+              <a href="${whatsappLink1}" target="_blank" class="action-link">📱 WhatsApp / написать</a>
+              <a href="${whatsappLink}" target="_blank" class="action-link">💬 WhatsApp / позвонить</a>
+            </div>
+            <button id="copyMsgBtn" class="action-link" style="background:#2f2a5a;">📋 Скопировать «Напиши мне»</button>
+          </div>
+          <div style="font-size:12px; margin-top:12px;">🌌 ты не один — всегда есть тот, кто выслушает</div>
+        </div>
+      `;
+    }
+
+    container.innerHTML = buildContent(currentSupport);
+    modal.style.display = 'flex';
+
+    // кнопка обновления фразы
+    const refreshBtn = document.getElementById('refreshSupportBtn');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        const newPhrase = getRandomSupport(emotionId);
+        const supportSpan = document.getElementById('dynamicSupportText');
+        if (supportSpan) supportSpan.innerText = `✨ ${newPhrase}`;
+      });
+    }
+    // копирование фразы контакта
+    const copyMsg = document.getElementById('copyMsgBtn');
+    if (copyMsg) {
+      copyMsg.addEventListener('click', () => {
+        navigator.clipboard.writeText(emotion.contactMsg + " — мне нужна поддержка. Ты рядом?");
+        copyMsg.innerText = '✅ Скопировано!';
+        setTimeout(() => { copyMsg.innerText = '📋 Скопировать «Напиши мне»'; }, 1600);
+      });
+    }
+    // закрытие модалки
+    const closeX = document.getElementById('closeModalX');
+    const backBtn = document.getElementById('backToSpheres');
+    const closeModalFunc = () => { modal.style.display = 'none'; };
+    if (closeX) closeX.onclick = closeModalFunc;
+    if (backBtn) backBtn.onclick = closeModalFunc;
+    modal.onclick = (e) => { if (e.target === modal) closeModalFunc(); };
+  }
+
+  // Эффект футуристических плавающих пузырьков (глубина)
+  function createFloatingBackgroundEffect() {
+    const style = document.createElement('style');
+    style.textContent = `
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 20% 40%, rgba(100, 0, 200, 0.15), transparent 70%);
+        pointer-events: none;
+        z-index: -1;
+      }
+      .emotion-sphere {
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+    `;
+    document.head.appendChild(style);
+    // добавим динамические неоновые сферы по краям
+    const grid = document.querySelector('.emotions-carousel');
+    if(grid) grid.style.position = 'relative';
+  }
+
+  renderMainGrid();
+</script>
+</body>
+</html>
