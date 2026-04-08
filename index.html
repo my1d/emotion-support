@@ -383,16 +383,16 @@
 
   // ============ ДАННЫЕ ВСЕХ ЭМОЦИЙ (оригинальные + новые: тревожность, стыд, скука, зависть) ============
   const emotionsData = [
-    { id: 'joy', name: 'Радость', emoji: '✨', color: '#F7D44A', glow: '#FFE484', img: 'joy.png', videoUrl: 'https://youtu.be/u4IZoQgWmII', contactMsg: 'Ты можешь поделиться радостью, я отвечу теплом' },
-    { id: 'sadness', name: 'Грусть', emoji: '😢', color: '#5FA7C2', glow: '#6DC5FF', img: 'sadness.png', videoUrl: 'https://youtu.be/RYDAHkZfSeQ', contactMsg: 'Поговори со мной, когда тяжело — я рядом' },
-    { id: 'anger', name: 'Гнев', emoji: '😤', color: '#E35F3E', glow: '#FF7A4A', img: 'anger.png', videoUrl: 'https://youtu.be/wkse4PPxkk4', contactMsg: 'Выпусти пар, я выслушаю без осуждения' },
-    { id: 'fear', name: 'Страх', emoji: '😨', color: '#A47BE0', glow: '#C48CFF', img: 'fear.png', videoUrl: 'https://youtu.be/lzpiFgzLGkM?list=RDlzpiFgzLGkM', contactMsg: 'Твои страхи не стыдны, напиши мне' },
-    { id: 'disgust', name: 'Брезгливость', emoji: '🤢', color: '#6FA36A', glow: '#8CC47A', img: 'disgust.png', videoUrl: 'https://youtu.be/n9z1gesN6zs', contactMsg: 'Можно высказать отвращение, это честно' },
+    { id: 'joy', name: 'Радость', emoji: '✨', color: '#F7D44A', glow: '#FFE484', img: 'img/joy.png', videoUrl: 'https://youtu.be/u4IZoQgWmII', contactMsg: 'Ты можешь поделиться радостью, я отвечу теплом' },
+    { id: 'sadness', name: 'Грусть', emoji: '😢', color: '#5FA7C2', glow: '#6DC5FF', img: 'img/sadness.png', videoUrl: 'https://youtu.be/RYDAHkZfSeQ', contactMsg: 'Поговори со мной, когда тяжело — я рядом' },
+    { id: 'anger', name: 'Гнев', emoji: '😤', color: '#E35F3E', glow: '#FF7A4A', img: 'img/anger.png', videoUrl: 'https://youtu.be/wkse4PPxkk4', contactMsg: 'Выпусти пар, я выслушаю без осуждения' },
+    { id: 'fear', name: 'Страх', emoji: '😨', color: '#A47BE0', glow: '#C48CFF', img: 'img/fear.png', videoUrl: 'https://youtu.be/lzpiFgzLGkM?list=RDlzpiFgzLGkM', contactMsg: 'Твои страхи не стыдны, напиши мне' },
+    { id: 'disgust', name: 'Брезгливость', emoji: '🤢', color: '#6FA36A', glow: '#8CC47A', img: 'img/disgust.png', videoUrl: 'https://youtu.be/n9z1gesN6zs', contactMsg: 'Можно высказать отвращение, это честно' },
     // новые эмоции из запроса
-    { id: 'anxiety', name: 'Тревожность', emoji: '🌪️', color: '#FF8C94', glow: '#FFA5B0', img: 'anxiety.png', videoUrl: 'https://youtu.be/4Ts9FddJiQA?list=RD4Ts9FddJiQA', contactMsg: 'Беспокоишься о будущем? Давай разберём вместе' },
-    { id: 'embarrassment', name: 'Стыд', emoji: '🫣', color: '#F4A261', glow: '#FFBC7A', img: 'embarrassment.png', videoUrl: 'https://youtu.be/E0Om1LC-XeU', contactMsg: 'Неловкость — это нормально. Я здесь, не стесняйся' },
-    { id: 'ennui', name: 'Скука / Апатия', emoji: '💤', color: '#8D99AE', glow: '#B0BBD6', img: 'ennui.png', videoUrl: 'https://youtu.be/eVR9Er0fN5M?list=RDeVR9Er0fN5M', contactMsg: 'Ничего не хочется? Просто побудь, я никуда не уйду' },
-    { id: 'envy', name: 'Зависть', emoji: '💚', color: '#9DC183', glow: '#B8E08C', img: 'envy.png', videoUrl: 'https://youtu.be/wnHW6o8WMas', contactMsg: 'Сравнение мучает? Поговорим об этом' }
+    { id: 'anxiety', name: 'Тревожность', emoji: '🌪️', color: '#FF8C94', glow: '#FFA5B0', img: 'img/anxiety.png', videoUrl: 'https://youtu.be/4Ts9FddJiQA?list=RD4Ts9FddJiQA', contactMsg: 'Беспокоишься о будущем? Давай разберём вместе' },
+    { id: 'embarrassment', name: 'Стыд', emoji: '🫣', color: '#F4A261', glow: '#FFBC7A', img: 'img/embarrassment.png', videoUrl: 'https://youtu.be/E0Om1LC-XeU', contactMsg: 'Неловкость — это нормально. Я здесь, не стесняйся' },
+    { id: 'ennui', name: 'Скука / Апатия', emoji: '💤', color: '#8D99AE', glow: '#B0BBD6', img: 'img/ennui.png', videoUrl: 'https://youtu.be/eVR9Er0fN5M?list=RDeVR9Er0fN5M', contactMsg: 'Ничего не хочется? Просто побудь, я никуда не уйду' },
+    { id: 'envy', name: 'Зависть', emoji: '💚', color: '#9DC183', glow: '#B8E08C', img: 'img/envy.png', videoUrl: 'https://youtu.be/wnHW6o8WMas', contactMsg: 'Сравнение мучает? Поговорим об этом' }
   ];
 
   // фразы поддержки для каждой эмоции (генератор)
